@@ -36,6 +36,7 @@ import (
 
 var (
 	initContainerFlags struct {
+		name        string
 		home        string
 		homeLink    bool
 		mediaLink   bool
@@ -73,6 +74,12 @@ var initContainerCmd = &cobra.Command{
 
 func init() {
 	flags := initContainerCmd.Flags()
+
+	flags.StringVar(&initContainerFlags.name,
+		"name",
+		"",
+		"Name of the container to initialize")
+	initContainerCmd.MarkFlagRequired("user")
 
 	flags.StringVar(&initContainerFlags.home,
 		"home",
@@ -137,6 +144,8 @@ func initContainer(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.New("failed to create /run/.toolboxenv")
 	}
+
+	toolboxEnvFile.WriteString(initContainerFlags.name)
 
 	defer toolboxEnvFile.Close()
 
